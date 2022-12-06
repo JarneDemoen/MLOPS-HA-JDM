@@ -12,7 +12,7 @@ from dotenv import load_dotenv
 # This line read those in.
 load_dotenv()
 
-LUNGS = os.environ.get('LUNGS').split(',')
+ANIMALS = os.environ.get('ANIMALS').split(',')
 MODEL_NAME = os.environ.get('MODEL_NAME')
 LOCAL_DEPLOYMENT = os.environ.get('LOCAL_DEPLOYMENT')
 print(LOCAL_DEPLOYMENT)

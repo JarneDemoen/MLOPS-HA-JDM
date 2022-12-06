@@ -21,7 +21,7 @@ parser.add_argument('--training-folder', type=str, dest='training_folder', help=
 parser.add_argument('--testing-folder', type=str, dest='testing_folder', help='testing folder mounting point.')
 parser.add_argument('--max-epochs', type=int, dest='max_epochs', help='The maximum epochs to train.')
 parser.add_argument('--seed', type=int, dest='seed', help='The random seed to use.')
-# parser.add_argument('--initial-learning-rate', type=float, dest='initial_lr', help='The initial learning rate to use.')
+parser.add_argument('--initial-learning-rate', type=float, dest='initial_lr', help='The initial learning rate to use.')
 parser.add_argument('--batch-size', type=int, dest='batch_size', help='The batch size to use during training.')
 parser.add_argument('--patience', type=int, dest='patience', help='The patience for the Early Stopping.')
 parser.add_argument('--model-name', type=str, dest='model_name', help='The name of the model to use.')
@@ -36,15 +36,15 @@ print('Testing folder:', testing_folder)
 
 MAX_EPOCHS = args.max_epochs # Int
 SEED = args.seed # Int
-# INITIAL_LEARNING_RATE = args.initial_lr # Float
+INITIAL_LEARNING_RATE = args.initial_lr # Float
 BATCH_SIZE = args.batch_size # Int
 PATIENCE = args.patience # Int
 MODEL_NAME = args.model_name # String
 
 
 # As we're mounting the training_folder and testing_folder onto the `/mnt/data` directories, we can load in the images by using glob.
-training_paths = glob(os.path.join('./data/train', '**', 'processed_lungs', '**', '*.jpg'), recursive=True)
-testing_paths = glob(os.path.join('./data/test', '**', 'processed_lungs', '**', '*.jpg'), recursive=True)
+training_paths = glob(os.path.join('./data/train', '**', 'processed_animals', '**', '*.jpg'), recursive=True)
+testing_paths = glob(os.path.join('./data/test', '**', 'processed_animals', '**', '*.jpg'), recursive=True)
 
 print("Training samples:", len(training_paths))
 print("Testing samples:", len(testing_paths))
@@ -101,21 +101,13 @@ cb_early_stop = keras.callbacks.EarlyStopping(monitor='val_loss',
                                               restore_best_weights=True)
 
 # Reduce the Learning Rate when not learning more for 4 epochs.
-# cb_reduce_lr_on_plateau = keras.callbacks.ReduceLROnPlateau(factor=.5, patience=4, verbose=1)
+cb_reduce_lr_on_plateau = keras.callbacks.ReduceLROnPlateau(factor=.5, patience=4, verbose=1)
 
-# opt = SGD(lr=INITIAL_LEARNING_RATE, decay=INITIAL_LEARNING_RATE / MAX_EPOCHS) # Define the Optimizer
+opt = SGD(lr=INITIAL_LEARNING_RATE, decay=INITIAL_LEARNING_RATE / MAX_EPOCHS) # Define the Optimizer
 
-def dice_coef(y_true, y_pred, smooth=1):
-    intersection = K.sum(K.abs(y_true * y_pred), axis=-1)
-    return (2.*intersection + smooth)/(K.sum(K.square(y_true),-1)+ K.sum(K.square(y_pred),-1) + smooth)
+model = buildModel((64, 64, 3), 3) # Create the AI model as defined in the utils script.
 
-def dice_coef_loss(y_true, y_pred):
-    return 1-dice_coef(y_true, y_pred)
-
-autoencoder = buildModel((128, 128, 3), 3) # Create the AI model as defined in the utils script.
-
-# model.compile(loss="categorical_crossentropy", optimizer=opt, metrics=["accuracy"])
-autoencoder.compile(optimizer='adam', loss=dice_coef_loss, metrics=[dice_coef, 'accuracy',cb_save_best_model, cb_early_stop]);
+model.compile(loss="categorical_crossentropy", optimizer=opt, metrics=["accuracy"])
 
 # Add callback LogToAzure class to log to AzureML
 class LogToAzure(keras.callbacks.Callback):
@@ -138,8 +130,46 @@ aug = ImageDataGenerator(rotation_range=30, width_shift_range=0.1,
                          horizontal_flip=True, fill_mode="nearest")
 
 # train the network
-autoencoder.fit(X_train, y_train, epochs=50, batch_size=8, shuffle=True)
+history = model.fit_generator( aug.flow(X_train, y_train, batch_size=BATCH_SIZE),
+                        validation_data=(X_test, y_test),
+                        steps_per_epoch=len(X_train) // BATCH_SIZE,
+                        epochs=MAX_EPOCHS,
+                        callbacks=[
+                            LogToAzure(run), # Thanks to Patrik De Boe!
+                            cb_save_best_model,
+                            cb_early_stop,
+                            cb_reduce_lr_on_plateau
+                        ] )
 
 print("[INFO] evaluating network...")
+predictions = model.predict(X_test, batch_size=32)
+print(classification_report(y_test.argmax(axis=1), predictions.argmax(axis=1), target_names=['cats', 'dogs', 'panda'])) # Give the target names to easier refer to them.
+# If you want, you can enter the target names as a parameter as well, in case you ever adapt your AI model to more animals.
+
+cf_matrix = confusion_matrix(y_test.argmax(axis=1), predictions.argmax(axis=1))
+print(cf_matrix)
+
+# We could use this, but we are logging realtime with the callback!
+# run.log_list('accuracy', history.history['accuracy'])
+# run.log_list('loss', history.history['loss'])
+# run.log_list('val_loss', history.history['val_loss'])
+# run.log_list('val_accuracy', history.history['val_accuracy'])
+
+print(LABELS)
+
+## Log Confusion matrix , see https://docs.microsoft.com/en-us/python/api/azureml-core/azureml.core.run.run?view=azure-ml-py#log-confusion-matrix-name--value--description----
+cmtx = {
+    "schema_type": "confusion_matrix",
+    # "parameters": params,
+    "data": {
+        "class_labels": ['cats', 'dogs', 'panda'],   # ["0", "1"]
+        "matrix": [[int(y) for y in x] for x in cf_matrix]
+    }
+}
+
+run.log_confusion_matrix('Confusion matrix - error rate', cmtx)
+
+# Save the confusion matrix to the outputs.
+np.save('outputs/confusion_matrix.npy', cf_matrix)
 
 print("DONE TRAINING. AI model has been saved to the outputs.")

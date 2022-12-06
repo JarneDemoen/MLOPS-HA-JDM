@@ -11,3 +11,5 @@ dependencies:
       - scikit-learn
       - tensorflow
       - opencv-python-headless
+      - azureml-core
+      - azureml-dataprep

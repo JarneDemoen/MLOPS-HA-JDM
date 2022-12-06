@@ -86,16 +86,16 @@ on:
 env:
   CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
 
-  CLIENT_ID: cf21afce-62c6-4ffc-8c44-305bbcd608cc # Change this !
-  TENANT_ID: b1b5b747-fa79-442d-b8ab-870c8343c3c4 # Change this !
-  WORKSPACE_NAME: MLOps-nathan-segers # Change this !
-  RESOURCE_GROUP: TETRA-Workshop-2406 # Change this !
-  SUBSCRIPTION_ID: 763622cd-d9e1-46f1-84c7-635df9708641 # Change this !
+  CLIENT_ID: ${{ secrets.CLIENT_ID }}
+  TENANT_ID: ${{ secrets.TENANT_ID }}
+  WORKSPACE_NAME: jarne-demoen-ha-ml
+  RESOURCE_GROUP: mlops-home-assignment
+  SUBSCRIPTION_ID: ${{ secrets.SUBSCRIPTION_ID }}
 
-  ANIMALS: cats,dogs,pandas # As we have three classes, let's just defined them here. This way we can easily loop over them later.
-  TRAIN_SET_NAME: animals-training-set
-  TEST_SET_NAME: animals-testing-set
-  MODEL_NAME: animal-cnn
+  LUNGS: ds_lung_images,ds_lung_masks
+  TRAIN_SET_NAME: lungs-training-set
+  TEST_SET_NAME: lungs-testing-set
+  MODEL_NAME: lungs-cnn
 
   SCRIPT_FOLDER: scripts
 
@@ -111,7 +111,7 @@ jobs:
     # needs: [dependencies] # Wait until this job was finished.
     if: ${{ inputs.data_prep }}
     # The type of runner that the job will run on
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-20.04
 
     env:
       DATA_FOLDER: data
@@ -147,17 +147,17 @@ jobs:
         (needs.data-preparing.result == 'success' || needs.data-preparing.result == 'skipped') &&
         inputs.ai_training
       }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     env:
-      INITIAL_LEARNING_RATE: 0.01
-      MAX_EPOCHS: 2
-      BATCH_SIZE: 32
+      # INITIAL_LEARNING_RATE: 0.01
+      MAX_EPOCHS: 50
+      BATCH_SIZE: 8
       PATIENCE: 11
-      EXPERIMENT_NAME: animal-classification
+      EXPERIMENT_NAME: mask-lung-images
 
       ## Compute cluster parts
-      AML_COMPUTE_CLUSTER_NAME: nathan-cpu-cluster
+      AML_COMPUTE_CLUSTER_NAME: jarne-cpu-cluster
       AML_COMPUTE_CLUSTER_MIN_NODES: 1
       AML_COMPUTE_CLISTER_MAX_NODES: 4
       AML_COMPUTE_CLUSTER_SKU: STANDARD_D2_V2
@@ -166,7 +166,7 @@ jobs:
 
       ## Training environment
       CONDA_DEPENDENCIES_PATH: conda_dependencies.yml
-      TRAINING_ENV_NAME: animals-classification-env-training
+      TRAINING_ENV_NAME: masks-lung-images-env-training
 
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -196,12 +196,12 @@ jobs:
         (needs.ai-training.result == 'success' || needs.ai-training.result == 'skipped') &&
         inputs.api_creation
       }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     env:
       DEPLOYMENT_DEPENDENCIES: deployment_environment.yml
-      DEPLOYMENT_ENV_NAME: animals-classification-env-deployment
-      SCORE_SERVICE_NAME: animals-classification-svc
+      DEPLOYMENT_ENV_NAME: masks-lung-images-env-deployment
+      SCORE_SERVICE_NAME: masks-lung-images-svc
       LOCAL_MODEL_PATH: api/outputs
       LOCAL_DEPLOYMENT: ${{ inputs.local_deployment }}
 
@@ -237,7 +237,7 @@ jobs:
         (needs.api-creation.result == 'success' || needs.api-creation.result == 'skipped') &&
         inputs.local_deployment
       }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
       - name: Download docker-config artifact

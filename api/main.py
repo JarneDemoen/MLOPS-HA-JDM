@@ -14,7 +14,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-ANIMALS = ['Cat', 'Dog', 'Panda'] # Animal names here
+LUNGS = ['ds_lung_images', 'ds_lung_masks'] # Animal names here
 
 model = load_model('outputs/animal-cnn-test') # Model_name here!
 
