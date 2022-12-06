@@ -37,7 +37,7 @@ def processAndUploadLungImages(datasets, data_path, processed_path, ws, dataset_
     # Get all the image paths with the `glob()` method.
     print(f'Resizing all images for {dataset_name} ...')
     # image_paths = glob(f"{lung_dataset_path}/*.jpg")
-    image_paths = glob(f"{lung_dataset_path}/{dataset_name}/*.jpg") # CHANGE THIS LINE IF YOU NEED TO GET YOUR dataset_nameS IN THERE IF NEEDED!
+    image_paths = glob(f"{lung_dataset_path}/{dataset_name}/*.png") # CHANGE THIS LINE IF YOU NEED TO GET YOUR dataset_nameS IN THERE IF NEEDED!
 
     # Process all the images with OpenCV. Reading them, then resizing them to 64x64 and saving them once more.
     print(f"Processing {len(image_paths)} images")
