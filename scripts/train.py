@@ -98,10 +98,10 @@ cb_save_best_model = keras.callbacks.ModelCheckpoint(filepath=model_path,
                                                          verbose=1)
 
 # Early stop when the val_los isn't improving for PATIENCE epochs
-# cb_early_stop = keras.callbacks.EarlyStopping(monitor='val_loss', 
-#                                               patience= PATIENCE,
-#                                               verbose=1,
-#                                               restore_best_weights=True)
+cb_early_stop = keras.callbacks.EarlyStopping(monitor='val_loss', 
+                                              patience= PATIENCE,
+                                              verbose=1,
+                                              restore_best_weights=True)
 
 # Reduce the Learning Rate when not learning more for 4 epochs.
 # cb_reduce_lr_on_plateau = keras.callbacks.ReduceLROnPlateau(factor=.5, patience=4, verbose=1)
@@ -141,7 +141,7 @@ class LogToAzure(keras.callbacks.Callback):
 #                          horizontal_flip=True, fill_mode="nearest")
 
 # train the network
-autoencoder.fit(X_train, y_train, epochs=50, batch_size=8, shuffle=True, callbacks=[cb_save_best_model, LogToAzure(run)])
+autoencoder.fit(X_train, y_train, epochs=50, batch_size=8, shuffle=True, callbacks=[cb_save_best_model,cb_early_stop,LogToAzure(run)])
 
 print("[INFO] evaluating network...")
 
