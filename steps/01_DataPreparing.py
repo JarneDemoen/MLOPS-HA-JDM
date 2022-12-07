@@ -109,7 +109,7 @@ def trainTestSplitData(ws):
         print(f'Starting to process {dataset_name} images.')
 
         # Get only the .JPG images
-        lung_images = [img for img in lung_dataset.to_path() if img.split('.')[-1] == 'jpg']
+        lung_images = [img for img in lung_dataset.to_path() if img.split('.')[-1] == 'png']
 
         print(f'... there are about {len(lung_images)} images to process.')
 
