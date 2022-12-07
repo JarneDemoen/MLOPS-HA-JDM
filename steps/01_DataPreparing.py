@@ -22,7 +22,7 @@ load_dotenv()
 # LUNG_IMAGES = os.environ.get('LUNG_IMAGES')
 # LUNG_MASKS = os.environ.get('LUNG_MASKS')
 # LUNGS = [LUNG_IMAGES, LUNG_MASKS]
-LUNGS = os.environ.get('LUNGS') # When using Github Actions
+LUNGS = os.environ.get('LUNGS').split(',') # When using Github Actions
 SEED = int(os.environ.get('RANDOM_SEED'))
 TRAIN_TEST_SPLIT_FACTOR = float(os.environ.get('TRAIN_TEST_SPLIT_FACTOR'))
 
