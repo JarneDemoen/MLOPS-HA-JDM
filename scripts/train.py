@@ -92,16 +92,16 @@ os.makedirs(model_path, exist_ok=True)
 run = Run.get_context()
 
 # Save the best model, not the last
-cb_save_best_model = keras.callbacks.ModelCheckpoint(filepath=model_path,
-                                                         monitor='val_loss',
-                                                         save_best_only=True,
-                                                         verbose=1)
+# cb_save_best_model = keras.callbacks.ModelCheckpoint(filepath=model_path,
+#                                                          monitor='val_loss',
+#                                                          save_best_only=True,
+#                                                          verbose=1)
 
 # Early stop when the val_los isn't improving for PATIENCE epochs
-cb_early_stop = keras.callbacks.EarlyStopping(monitor='val_loss', 
-                                              patience= PATIENCE,
-                                              verbose=1,
-                                              restore_best_weights=True)
+# cb_early_stop = keras.callbacks.EarlyStopping(monitor='val_loss', 
+#                                               patience= PATIENCE,
+#                                               verbose=1,
+#                                               restore_best_weights=True)
 
 # Reduce the Learning Rate when not learning more for 4 epochs.
 # cb_reduce_lr_on_plateau = keras.callbacks.ReduceLROnPlateau(factor=.5, patience=4, verbose=1)
@@ -118,7 +118,7 @@ def dice_coef_loss(y_true, y_pred):
 autoencoder = buildModel((128, 128, 3))
 
 # model.compile(loss="categorical_crossentropy", optimizer=opt, metrics=["accuracy"])
-autoencoder.compile(optimizer='adam', loss=dice_coef_loss, metrics=[dice_coef, 'accuracy',cb_save_best_model, cb_early_stop]);
+autoencoder.compile(optimizer='adam', loss=dice_coef_loss, metrics=[dice_coef, 'accuracy'])
 
 # Add callback LogToAzure class to log to AzureML
 class LogToAzure(keras.callbacks.Callback):
@@ -136,9 +136,9 @@ class LogToAzure(keras.callbacks.Callback):
 # Image augmentation allows us to construct “additional” training data from our existing training data 
 # by randomly rotating, shifting, shearing, zooming, and flipping. This is to avoid overfitting.
 # It also allows us to fit AI models using a Generator, so we don't need to capture the whole dataset in memory at once.
-aug = ImageDataGenerator(rotation_range=30, width_shift_range=0.1,
-                         height_shift_range=0.1, shear_range=0.2, zoom_range=0.2,
-                         horizontal_flip=True, fill_mode="nearest")
+# aug = ImageDataGenerator(rotation_range=30, width_shift_range=0.1,
+#                          height_shift_range=0.1, shear_range=0.2, zoom_range=0.2,
+#                          horizontal_flip=True, fill_mode="nearest")
 
 # train the network
 autoencoder.fit(X_train, y_train, epochs=50, batch_size=8, shuffle=True)
