@@ -43,6 +43,7 @@ def getFeatures(filepaths: List[str]) -> np.array:
 
 def buildModel(inputShape: tuple) -> Sequential:
     #Encoder
+    print("InputShape",inputShape)
     input_img = Input(shape=inputShape)
 
     x = Conv2D(16, (3, 3), activation='relu', padding='same')(input_img)
@@ -62,5 +63,7 @@ def buildModel(inputShape: tuple) -> Sequential:
     decoder = Conv2D(3, (3, 3), activation='sigmoid', padding='same')(x)
 
     autoencoder = Model(input_img, decoder)
+
+    print(autoencoder.summary())
 
     return autoencoder

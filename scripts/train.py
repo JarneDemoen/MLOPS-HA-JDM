@@ -35,7 +35,7 @@ testing_folder = args.testing_folder
 print('Testing folder:', testing_folder)
 
 MAX_EPOCHS = args.max_epochs # Int
-SEED = args.seed # Int
+# SEED = args.seed # Int
 # INITIAL_LEARNING_RATE = args.initial_lr # Float
 BATCH_SIZE = args.batch_size # Int
 PATIENCE = args.patience # Int
@@ -50,10 +50,10 @@ print("Training samples:", len(training_paths))
 print("Testing samples:", len(testing_paths))
 
 # Make sure to shuffle in the same way as I'm doing everything
-random.seed(SEED)
-random.shuffle(training_paths)
-random.seed(SEED)
-random.shuffle(testing_paths)
+# random.seed(SEED)
+# random.shuffle(training_paths)
+# random.seed(SEED)
+# random.shuffle(testing_paths)
 
 print(training_paths[:3]) # Examples
 print(testing_paths[:3]) # Examples
@@ -65,6 +65,15 @@ y_train = getTargets(training_paths)
 X_test = getFeatures(testing_paths)
 y_test = getTargets(testing_paths)
 
+print("Examples of X_train and y_train:")
+print(X_train[:3])
+print(y_train[:3])
+
+print("Examples of X_test and y_test:")
+print(X_test[:3])
+print(y_test[:3])
+
+
 print('Shapes:')
 print(X_train.shape)
 print(X_test.shape)
@@ -72,12 +81,12 @@ print(len(y_train))
 print(len(y_test))
 
 # Make sure the data is one-hot-encoded
-LABELS, y_train, y_test = encodeLabels(y_train, y_test)
-print(LABELS)
-print('One Hot Shapes:')
+# LABELS, y_train, y_test = encodeLabels(y_train, y_test)
+# print(LABELS)
+# print('One Hot Shapes:')
 
-print(y_train.shape)
-print(y_test.shape)
+# print(y_train.shape)
+# print(y_test.shape)
 
 # Create an output directory where our AI model will be saved to.
 # Everything inside the `outputs` directory will be logged and kept aside for later usage.
@@ -112,7 +121,8 @@ def dice_coef(y_true, y_pred, smooth=1):
 def dice_coef_loss(y_true, y_pred):
     return 1-dice_coef(y_true, y_pred)
 
-autoencoder = buildModel((128, 128, 3)) # Create the AI model as defined in the utils script.
+autoencoder = buildModel((128, 128, 3))
+print(autoencoder.summary())
 
 # model.compile(loss="categorical_crossentropy", optimizer=opt, metrics=["accuracy"])
 autoencoder.compile(optimizer='adam', loss=dice_coef_loss, metrics=[dice_coef, 'accuracy',cb_save_best_model, cb_early_stop]);
