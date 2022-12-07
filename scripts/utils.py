@@ -17,12 +17,15 @@ from tensorflow.keras.layers import Input, Dense, Conv2D, MaxPooling2D, UpSampli
 from tensorflow.keras import backend as K
 
 def getTargets(filepaths: List[str]) -> List[str]:
-    labels = [fp for fp in filepaths] # Get only the animal name
-    print("Labels",labels)
-    print("Labels[0]",labels[0])
-    print("Labels[800]",labels[800])
-    
-    return labels
+    targets = []
+    for fp in filepaths:
+        fp_splitted = fp.split('/')
+        label = fp_splitted[5]
+        if label == 'ds_lung_masks':
+            image = cv2.imread(fp)
+            targets.append(image)
+    return np.array(targets)
+
 
 def encodeLabels(y_train: List, y_test: List):
     label_encoder = LabelEncoder()
@@ -38,11 +41,14 @@ def encodeLabels(y_train: List, y_test: List):
     return LABELS, y_train_1h, y_test_1h
 
 def getFeatures(filepaths: List[str]) -> np.array:
-    images = []
-    for imagePath in filepaths:
-        image = cv2.imread(imagePath)
-        images.append(image)
-    return np.array(images)
+    features = []
+    for fp in filepaths:
+        fp_splitted = fp.split('/')
+        label = fp_splitted[5]
+        if label == 'ds_lung_images':
+            image = cv2.imread(fp)
+            features.append(image)
+    return np.array(features)
 
 def buildModel(inputShape: tuple) -> Sequential:
     #Encoder

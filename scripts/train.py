@@ -56,8 +56,6 @@ y_train = getTargets(training_paths)
 X_test = getFeatures(testing_paths)
 y_test = getTargets(testing_paths)
 
-print("Type of X_train:", type(X_train))
-
 # X_train = np.array(X_train)
 # y_train = np.array(y_train)
 
