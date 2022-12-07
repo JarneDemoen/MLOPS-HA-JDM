@@ -112,7 +112,7 @@ def dice_coef(y_true, y_pred, smooth=1):
 def dice_coef_loss(y_true, y_pred):
     return 1-dice_coef(y_true, y_pred)
 
-autoencoder = buildModel((128, 128, 3), 3) # Create the AI model as defined in the utils script.
+autoencoder = buildModel((128, 128, 3)) # Create the AI model as defined in the utils script.
 
 # model.compile(loss="categorical_crossentropy", optimizer=opt, metrics=["accuracy"])
 autoencoder.compile(optimizer='adam', loss=dice_coef_loss, metrics=[dice_coef, 'accuracy',cb_save_best_model, cb_early_stop]);
