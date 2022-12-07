@@ -65,6 +65,18 @@ y_train = getTargets(training_paths)
 X_test = getFeatures(testing_paths)
 y_test = getTargets(testing_paths)
 
+X_train = X_train.astype('float32')
+y_train = y_train.astype('float32')
+
+X_test = X_test.astype('float32')
+y_test = y_test.astype('float32')
+
+X_train = np.array(X_train)
+y_train = np.array(y_train)
+
+X_test = np.array(X_test)
+y_test = np.array(y_test)
+
 print("Examples of X_train and y_train:")
 print(X_train[:3])
 print(y_train[:3])
