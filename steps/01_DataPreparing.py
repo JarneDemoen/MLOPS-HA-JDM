@@ -82,8 +82,9 @@ def emptyDirectory(directory_path):
 def prepareDataset(ws):
     data_folder = os.path.join(os.getcwd(), 'data')
     os.makedirs(data_folder, exist_ok=True)
-
+    print("LUNGS: ", LUNGS)
     for dataset_name in LUNGS:
+        print(f"Creating directory for {dataset_name} images at {data_folder} ...")
         os.makedirs(os.path.join(data_folder, 'lungs', dataset_name), exist_ok=True)
 
     # Define a path to store the lung images onto. We'll choose for `data/processed/lungs` this time. Again, create subdirectories for all the lungs
