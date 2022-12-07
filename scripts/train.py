@@ -49,15 +49,6 @@ testing_paths = glob(os.path.join('./data/test', '**', 'processed_lungs', '**', 
 print("Training samples:", len(training_paths))
 print("Testing samples:", len(testing_paths))
 
-# Make sure to shuffle in the same way as I'm doing everything
-# random.seed(SEED)
-# random.shuffle(training_paths)
-# random.seed(SEED)
-# random.shuffle(testing_paths)
-
-print(training_paths[:3]) # Examples
-print(testing_paths[:3]) # Examples
-
 # Parse to Features and Targets for both Training and Testing. Refer to the Utils package for more information
 X_train = getFeatures(training_paths)
 y_train = getTargets(training_paths)
@@ -65,26 +56,13 @@ y_train = getTargets(training_paths)
 X_test = getFeatures(testing_paths)
 y_test = getTargets(testing_paths)
 
-X_train = np.array(X_train)
-y_train = np.array(y_train)
+print("Type of X_train:", type(X_train))
 
-X_test = np.array(X_test)
-y_test = np.array(y_test)
+# X_train = np.array(X_train)
+# y_train = np.array(y_train)
 
-# X_train = X_train.astype('float32')
-# y_train = y_train.astype('float32')
-
-# X_test = X_test.astype('float32')
-# y_test = y_test.astype('float32')
-
-print("Examples of X_train and y_train:")
-print(X_train[:3])
-print(y_train[:3])
-
-print("Examples of X_test and y_test:")
-print(X_test[:3])
-print(y_test[:3])
-
+# X_test = np.array(X_test)
+# y_test = np.array(y_test)
 
 print('Shapes:')
 print(X_train.shape)
@@ -134,7 +112,6 @@ def dice_coef_loss(y_true, y_pred):
     return 1-dice_coef(y_true, y_pred)
 
 autoencoder = buildModel((128, 128, 3))
-print(autoencoder.summary())
 
 # model.compile(loss="categorical_crossentropy", optimizer=opt, metrics=["accuracy"])
 autoencoder.compile(optimizer='adam', loss=dice_coef_loss, metrics=[dice_coef, 'accuracy',cb_save_best_model, cb_early_stop]);

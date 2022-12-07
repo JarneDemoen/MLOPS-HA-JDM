@@ -17,8 +17,11 @@ from tensorflow.keras.layers import Input, Dense, Conv2D, MaxPooling2D, UpSampli
 from tensorflow.keras import backend as K
 
 def getTargets(filepaths: List[str]) -> List[str]:
-    labels = [fp.split('/')[-1].split('_')[0] for fp in filepaths] # Get only the animal name
-
+    labels = [fp for fp in filepaths] # Get only the animal name
+    print("Labels",labels)
+    print("Labels[0]",labels[0])
+    print("Labels[800]",labels[800])
+    
     return labels
 
 def encodeLabels(y_train: List, y_test: List):
@@ -64,6 +67,5 @@ def buildModel(inputShape: tuple) -> Sequential:
 
     autoencoder = Model(input_img, decoder)
 
-    print(autoencoder.summary())
 
     return autoencoder
