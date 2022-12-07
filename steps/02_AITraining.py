@@ -133,7 +133,7 @@ def downloadAndRegisterModel(ws, run):
 def main():
     ws = connectWithAzure()
 
-    TRAIN_ON_LOCAL = os.environ.get('TRAIN_ON_LOCAL') == 'true'
+    # TRAIN_ON_LOCAL = os.environ.get('TRAIN_ON_LOCAL') == 'true'
     
     compute_target = prepareComputeCluster(ws)
 
