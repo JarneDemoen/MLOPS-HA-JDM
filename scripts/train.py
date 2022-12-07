@@ -71,11 +71,11 @@ y_train = np.array(y_train)
 X_test = np.array(X_test)
 y_test = np.array(y_test)
 
-X_train = X_train.astype('float32')
-y_train = y_train.astype('float32')
+# X_train = X_train.astype('float32')
+# y_train = y_train.astype('float32')
 
-X_test = X_test.astype('float32')
-y_test = y_test.astype('float32')
+# X_test = X_test.astype('float32')
+# y_test = y_test.astype('float32')
 
 print("Examples of X_train and y_train:")
 print(X_train[:3])
