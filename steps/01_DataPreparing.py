@@ -19,8 +19,10 @@ from azureml.data.datapath import DataPath
 # When you work locally, you can use a .env file to store all your environment variables.
 # This line read those in.
 load_dotenv()
-
-LUNGS = os.environ.get('LUNGS').split(',')
+LUNG_IMAGES = os.environ.get('LUNG_IMAGES')
+LUNG_MASKS = os.environ.get('LUNG_MASKS')
+LUNGS = [LUNG_IMAGES, LUNG_MASKS]
+# LUNGS = os.environ.get('LUNGS') # When using Github Actions
 SEED = int(os.environ.get('RANDOM_SEED'))
 TRAIN_TEST_SPLIT_FACTOR = float(os.environ.get('TRAIN_TEST_SPLIT_FACTOR'))
 
@@ -29,17 +31,19 @@ def processAndUploadLungImages(datasets, data_path, processed_path, ws, dataset_
     # We can't use mount on these machines, so we'll have to download them
 
     lung_dataset_path = os.path.join(data_path, 'lungs', dataset_name)
-
+    print(f'Creating directory for {dataset_name} images at {lung_dataset_path} ...')
     # Get the dataset name for this lung_dataset, then download to the directory
     datasets[dataset_name].download(lung_dataset_path, overwrite=True) # Overwriting means we don't have to delete if they already exist, in case something goes wrong.
     print('Downloading all the images')
 
     # Get all the image paths with the `glob()` method.
     print(f'Resizing all images for {dataset_name} ...')
-    print(os.listdir(lung_dataset_path))
-    # image_paths = glob(f"{lung_dataset_path}/*.jpg")
-    image_paths = glob(f"{lung_dataset_path}/{dataset_name}/**/*.png") # CHANGE THIS LINE IF YOU NEED TO GET YOUR dataset_nameS IN THERE IF NEEDED!
-
+    # print(os.listdir(lung_dataset_path))
+    # print(f"lung dataset path: {lung_dataset_path}")
+    # print(f"dataset name: {dataset_name}")
+    image_paths = glob(f"{lung_dataset_path}/*.png")
+    # image_paths = glob(f'{lung_dataset_path}/{dataset_name}/**/*.png') # CHANGE THIS LINE IF YOU NEED TO GET YOUR dataset_nameS IN THERE IF NEEDED!
+    # print("image paths: ", image_paths)
     # Process all the images with OpenCV. Reading them, then resizing them to 64x64 and saving them once more.
     print(f"Processing {len(image_paths)} images")
     for image_path in image_paths:
@@ -83,7 +87,7 @@ def prepareDataset(ws):
         os.makedirs(os.path.join(data_folder, 'lungs', dataset_name), exist_ok=True)
 
     # Define a path to store the lung images onto. We'll choose for `data/processed/lungs` this time. Again, create subdirectories for all the lungs
-    processed_path = os.path.join(os.getcwd(), 'data', 'processed', 'lungs')
+    processed_path = os.path.join(os.getcwd(), 'data', 'processed_lungs', 'lungs')
     os.makedirs(processed_path, exist_ok=True)
     for dataset_name in LUNGS:
         os.makedirs(os.path.join(processed_path, dataset_name), exist_ok=True)
