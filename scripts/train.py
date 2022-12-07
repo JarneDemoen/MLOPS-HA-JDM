@@ -118,7 +118,7 @@ def dice_coef_loss(y_true, y_pred):
 autoencoder = buildModel((128, 128, 3))
 
 # model.compile(loss="categorical_crossentropy", optimizer=opt, metrics=["accuracy"])
-autoencoder.compile(optimizer='adam', loss=dice_coef_loss, metrics=[dice_coef])
+autoencoder.compile(optimizer='adam', loss=dice_coef_loss, metrics=[dice_coef, "accuracy", "val_loss", "val_accuracy"])
 
 # Add callback LogToAzure class to log to AzureML
 class LogToAzure(keras.callbacks.Callback):
@@ -141,7 +141,7 @@ class LogToAzure(keras.callbacks.Callback):
 #                          horizontal_flip=True, fill_mode="nearest")
 
 # train the network
-autoencoder.fit(X_train, y_train, epochs=50, batch_size=8, shuffle=True, callbacks=[cb_save_best_model,cb_early_stop,LogToAzure(run)])
+autoencoder.fit(X_train, y_train, epochs=50, batch_size=8, shuffle=True, callbacks=[cb_save_best_model,cb_early_stop,LogToAzure(run)], validation_data=(X_test, y_test), validation_split=0.2)
 
 print("[INFO] evaluating network...")
 
