@@ -118,7 +118,7 @@ def dice_coef_loss(y_true, y_pred):
 autoencoder = buildModel((128, 128, 3))
 
 # model.compile(loss="categorical_crossentropy", optimizer=opt, metrics=["accuracy"])
-autoencoder.compile(optimizer='adam', loss=dice_coef_loss, metrics=[dice_coef, 'accuracy'])
+autoencoder.compile(optimizer='adam', loss=dice_coef_loss, metrics=[dice_coef])
 
 # Add callback LogToAzure class to log to AzureML
 class LogToAzure(keras.callbacks.Callback):
