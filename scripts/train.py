@@ -92,10 +92,10 @@ os.makedirs(model_path, exist_ok=True)
 run = Run.get_context()
 
 # Save the best model, not the last
-# cb_save_best_model = keras.callbacks.ModelCheckpoint(filepath=model_path,
-#                                                          monitor='val_loss',
-#                                                          save_best_only=True,
-#                                                          verbose=1)
+cb_save_best_model = keras.callbacks.ModelCheckpoint(filepath=model_path,
+                                                         monitor='val_loss',
+                                                         save_best_only=True,
+                                                         verbose=1)
 
 # Early stop when the val_los isn't improving for PATIENCE epochs
 # cb_early_stop = keras.callbacks.EarlyStopping(monitor='val_loss', 
@@ -141,7 +141,7 @@ class LogToAzure(keras.callbacks.Callback):
 #                          horizontal_flip=True, fill_mode="nearest")
 
 # train the network
-autoencoder.fit(X_train, y_train, epochs=50, batch_size=8, shuffle=True)
+autoencoder.fit(X_train, y_train, epochs=50, batch_size=8, shuffle=True, callbacks=[cb_save_best_model, LogToAzure(run)])
 
 print("[INFO] evaluating network...")
 
