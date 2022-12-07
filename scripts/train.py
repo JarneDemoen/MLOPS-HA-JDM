@@ -56,8 +56,11 @@ y_train = getTargets(training_paths)
 X_test = getFeatures(testing_paths)
 y_test = getTargets(testing_paths)
 
-print("Type of the sets:", type(X_train), type(y_train), type(X_test), type(y_test))
-print("Type of the content of the sets:", type(X_train[0]), type(y_train[0]), type(X_test[0]), type(y_test[0]))
+X_train = tf.cast(X_train, tf.float32)
+X_test = tf.cast(X_test, tf.float32)
+
+y_train = tf.cast(y_train, tf.float32)
+y_test = tf.cast(y_test, tf.float32)
 
 # X_train = np.array(X_train)
 # y_train = np.array(y_train)
