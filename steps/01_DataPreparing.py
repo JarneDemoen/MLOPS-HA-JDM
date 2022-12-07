@@ -105,6 +105,7 @@ def trainTestSplitData(ws):
     for dataset_name in LUNGS:
         # Get the dataset by name
         lung_dataset = Dataset.get_by_name(ws, f"resized_{dataset_name}")
+        print("lung_dataset: ", lung_dataset)
         print(f'Starting to process {dataset_name} images.')
 
         # Get only the .JPG images
