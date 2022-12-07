@@ -91,6 +91,13 @@ os.makedirs(model_path, exist_ok=True)
 ## We can now log interesting information to Azure, by using these methods.
 run = Run.get_context()
 
+def dice_coef(y_true, y_pred, smooth=1):
+    intersection = K.sum(K.abs(y_true * y_pred), axis=-1)
+    return (2.*intersection + smooth)/(K.sum(K.square(y_true),-1)+ K.sum(K.square(y_pred),-1) + smooth)
+
+def dice_coef_loss(y_true, y_pred):
+    return 1-dice_coef(y_true, y_pred)
+
 # Save the best model, not the last
 cb_save_best_model = keras.callbacks.ModelCheckpoint(filepath=model_path,
                                                          monitor='val_loss',
@@ -98,7 +105,7 @@ cb_save_best_model = keras.callbacks.ModelCheckpoint(filepath=model_path,
                                                          verbose=1)
 
 # Early stop when the val_los isn't improving for PATIENCE epochs
-cb_early_stop = keras.callbacks.EarlyStopping(monitor='val_loss', 
+cb_early_stop = keras.callbacks.EarlyStopping(monitor=dice_coef, 
                                               patience= PATIENCE,
                                               verbose=1,
                                               restore_best_weights=True)
@@ -108,17 +115,9 @@ cb_early_stop = keras.callbacks.EarlyStopping(monitor='val_loss',
 
 # opt = SGD(lr=INITIAL_LEARNING_RATE, decay=INITIAL_LEARNING_RATE / MAX_EPOCHS) # Define the Optimizer
 
-def dice_coef(y_true, y_pred, smooth=1):
-    intersection = K.sum(K.abs(y_true * y_pred), axis=-1)
-    return (2.*intersection + smooth)/(K.sum(K.square(y_true),-1)+ K.sum(K.square(y_pred),-1) + smooth)
-
-def dice_coef_loss(y_true, y_pred):
-    return 1-dice_coef(y_true, y_pred)
-
 autoencoder = buildModel((128, 128, 3))
-
 # model.compile(loss="categorical_crossentropy", optimizer=opt, metrics=["accuracy"])
-autoencoder.compile(optimizer='adam', loss=dice_coef_loss, metrics=[dice_coef, "accuracy", "val_loss", "val_accuracy"])
+autoencoder.compile(optimizer='adam', loss=dice_coef_loss, metrics=[dice_coef, "accuracy"])
 
 # Add callback LogToAzure class to log to AzureML
 class LogToAzure(keras.callbacks.Callback):
