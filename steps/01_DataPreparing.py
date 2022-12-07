@@ -123,6 +123,8 @@ def trainTestSplitData(ws):
 
         lung_test_images = lung_images[:amount_of_test_images]
         lung_training_images = lung_images[amount_of_test_images:]
+
+        print(f'... we have {len(lung_test_images)} testing images and {len(lung_training_images)} training images.')
         
         # Add them all to the other ones
         testing_datapaths.extend(lung_test_images)
