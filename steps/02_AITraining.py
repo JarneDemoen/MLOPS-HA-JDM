@@ -121,7 +121,10 @@ def downloadAndRegisterModel(ws, run):
     model_path = 'outputs/' + MODEL_NAME
 
     datasets = Dataset.get_all(workspace=ws) # Get all the datasets
+    print("Datasets: ", datasets)
     test_set_name = os.environ.get('TEST_SET_NAME')
+    print("Test set name: ", test_set_name)
+    print("Model path: ", model_path)
 
     run.download_files(prefix=model_path)
     run.register_model(MODEL_NAME,
