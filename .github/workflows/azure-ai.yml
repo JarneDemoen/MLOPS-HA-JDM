@@ -251,7 +251,7 @@ jobs:
         with:
           # list of Docker images to use as base name for tags
           images: |
-            ghcr.io/nathansegers/tetra-workshop
+            ghcr.io/jarnedemoen/mlops-ha-jarnedemoen-lungs
           # generate Docker tags based on the following events/attributes:
           # The GitHub Branch
           # The GitHub SHA
@@ -276,7 +276,24 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
 
+  api-deployment:
+    needs: [docker-build-and-push]
+    # This will run Always BUT only when the previous two jobs were successful or skipped && the local_deployment flag is set to true.
+    if: ${{
+        always() &&
+        (needs.docker-build-and-push.result == 'success') &&
+        inputs.local_deployment
+      }}
+    runs-on: self-hosted
 
+    steps:
+      - name: Kubectl version
+        run: kubectl version --client
+
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl apply -f kubernetes/deployment.yaml
+          kubectl apply -f kubernetes/service.yaml
 
 
 

@@ -56,12 +56,8 @@ def downloadLatestModel(ws):
 def main():
     ws = connectWithAzure()
 
-    print(os.environ)
-
-    environment = prepareEnv(ws)
-    service = prepareDeployment(ws, environment)
-    service.wait_for_deployment(show_output=True)
-
+    # Download the latest model
+    downloadLatestModel(ws)
 
 if __name__ == '__main__':
     main()
