@@ -100,7 +100,7 @@ def dice_coef_loss(y_true, y_pred):
 
 # Save the best model, not the last
 cb_save_best_model = keras.callbacks.ModelCheckpoint(filepath=model_path,
-                                                         monitor='val_loss',
+                                                         monitor=dice_coef,
                                                          save_best_only=True,
                                                          verbose=1)
 
@@ -117,7 +117,7 @@ cb_early_stop = keras.callbacks.EarlyStopping(monitor=dice_coef,
 
 autoencoder = buildModel((128, 128, 3))
 # model.compile(loss="categorical_crossentropy", optimizer=opt, metrics=["accuracy"])
-autoencoder.compile(optimizer='adam', loss=dice_coef_loss, metrics=[dice_coef, "accuracy"])
+autoencoder.compile(optimizer='adam', loss=dice_coef_loss, metrics=[dice_coef])
 
 # Add callback LogToAzure class to log to AzureML
 class LogToAzure(keras.callbacks.Callback):
