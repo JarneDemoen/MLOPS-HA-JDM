@@ -1,12 +1,17 @@
+import io
 import numpy as np
 from PIL import Image
 from tensorflow import keras
 from tensorflow.keras.models import load_model
 from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from skimage.color import rgb2gray
 from skimage.io import imread, imshow
-from skimage import data, color, io, filters, morphology,transform, exposure, feature, util
+from skimage import transform
+import os
+from fastapi.responses import StreamingResponse, FileResponse, Response
+from starlette.responses import FileResponse
+import matplotlib.pyplot as plt
+
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
@@ -18,16 +23,40 @@ app.add_middleware(
 
 LUNGS = ['ds_lung_images', 'ds_lung_masks']
 
-model = load_model('outputs/lungs-cnn') # Model_name here!
+model = load_model('outputs/lungs-cnn', compile=False) # Model_name here!
 
 @app.post('/upload/image')
 async def uploadImage(img: UploadFile = File(...)):
-    img = Image.open(img.file)
-    # original_image = original_image.resize((128, 128))
-    img = rgb2gray(img)
-    img = transform.resize(img, (128, 128,3), mode='constant', anti_aliasing=True)
-    img = np.array(img)
-    
-    mask = model.predict(img)
 
-    return mask
+    # convert img to numpy array
+    img = Image.open(img.file)
+    print('img',img)
+    img = np.array(img)
+    print('img',img)
+    lung_images = []
+    img = transform.resize(img, (128, 128,3), mode='constant', anti_aliasing=True)
+    print('img',img)
+    lung_images.append(img)
+    print('lung_images',lung_images)
+
+    lung_images = np.array(lung_images)
+    print('lung_images',lung_images)
+    lung_images = lung_images.reshape(len(lung_images), 128, 128, 3)
+    print('lung_images',lung_images)
+
+    print('lung_images',lung_images.shape)
+
+    # predict
+    output = model.predict(lung_images)
+    output = np.squeeze(output)
+    fig = plt.figure()
+    plt.imshow(output)
+    plt.savefig('prediction.jpg')
+    # output = Image.fromarray(output, mode='RGB')
+    # output.save('prediction.jpg')    
+    # return Response(content=io.BytesIO(output.tobytes()), media_type="image/png")
+    # return StreamingResponse(io.BytesIO(output.tobytes()), media_type="image/png")
+    
+
+    return FileResponse(media_type='application/octet-stream',filename='prediction.jpg',path='prediction.jpg')
+    # return FileResponse('prediction.jpg')
