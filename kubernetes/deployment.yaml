@@ -17,8 +17,11 @@ spec:
       containers:
       - name: ai-api
         image: ghcr.io/jarnedemoen/mlops-ha-jarnedemoen-lungs:latest
-        imagePullPolicy: Never
+        # imagePullPolicy: Never
         ports:
         - containerPort: 80
           name: http
+      # Pull secret credentials
+      imagePullSecrets:
+      - name: regcred
         
