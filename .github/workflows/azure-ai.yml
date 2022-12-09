@@ -256,7 +256,7 @@ jobs:
         always() &&
         (needs.api-creation.result == 'success' || needs.api-creation.result == 'skipped') &&
         inputs.local_deployment
-      }}
+        }}
     runs-on: ubuntu-20.04
 
     steps:
