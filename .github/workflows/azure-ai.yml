@@ -42,6 +42,16 @@ on:
         type: boolean
         default: false
         required: true
+      docker-build-and-push:
+        description: 'Check if we should build and push the docker image to the container registry.'
+        type: boolean
+        default: true
+        required: true
+      api-deployment:
+        description: 'Check if we should deploy the API to the Azure Container Instance.'
+        type: boolean
+        default: true
+        required: true
 
   workflow_dispatch:
     branches: [ main, lessonsteps/** ]
@@ -80,6 +90,16 @@ on:
         description: 'Check if we should deploy the API locally later on.'
         type: boolean
         default: false
+        required: true
+      docker-build-and-push:
+        description: 'Check if we should build and push the docker image to the container registry.'
+        type: boolean
+        default: true
+        required: true
+      api-deployment:
+        description: 'Check if we should deploy the API to the Azure Container Instance.'
+        type: boolean
+        default: true
         required: true
     
 
@@ -287,13 +307,18 @@ jobs:
     runs-on: self-hosted
 
     steps:
-      - name: Kubectl version
-        run: kubectl version --client
+      - uses: actions/checkout@v2
+      - name: KubeCTL version
+        run: kubectl version
+
+      - name: download the image with the docker pull command
+        run: docker pull ghcr.io/jarnedemoen/mlops-ha-jarnedemoen-lungs:latest
 
       - name: Deploy to Kubernetes
         run: |
           kubectl apply -f kubernetes/deployment.yaml
           kubectl apply -f kubernetes/service.yaml
+          kubectl rollout restart deployment ai-api -n mlops-home-assigment
 
 
 
