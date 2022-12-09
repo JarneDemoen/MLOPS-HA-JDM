@@ -15,4 +15,6 @@ jobs:
       split_images: false
       train_on_local: false
       local_deployment: false
+      docker-build-and-push: true
+      api-deployment: true
     secrets: inherit
