@@ -3,4 +3,4 @@ services:
     build: api
     image: ghcr.io/jarnedemoen/mlops-ha-jarnedemoen-lungs:latest
     ports:
-      - 8080:80
+      - 8088:80
