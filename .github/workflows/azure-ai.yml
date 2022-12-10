@@ -309,7 +309,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: KubeCTL version
-        run: kubectl version
+        run: kubectl version --client
 
       - name: download the image with the docker pull command
         run: docker pull ghcr.io/jarnedemoen/mlops-ha-jarnedemoen-lungs:latest
