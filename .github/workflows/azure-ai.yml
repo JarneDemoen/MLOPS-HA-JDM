@@ -125,7 +125,6 @@ env:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-
   data-preparing:
     ## Note: Uncomment this if you are activating the previous job called 'dependencies'.
     # needs: [dependencies] # Wait until this job was finished.
@@ -172,7 +171,7 @@ jobs:
     env:
       INITIAL_LEARNING_RATE: 0.01
       MAX_EPOCHS: 50
-      BATCH_SIZE: 8
+      BATCH_SIZE: 32
       PATIENCE: 11
       EXPERIMENT_NAME: mask-lung-images
 
@@ -311,7 +310,16 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: KubeCTL version
-        run: kubectl version --client
+        run: kubectl version
+
+      - name: Docker restart
+        run: docker restart
+
+      - name: Docker logs
+        run: docker logs
+
+      - name: Docker info
+        run: docker info
 
       - name: download the image with the docker pull command
         run: docker pull ghcr.io/jarnedemoen/mlops-ha-jarnedemoen-lungs:latest
