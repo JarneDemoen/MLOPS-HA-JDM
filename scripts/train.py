@@ -71,8 +71,8 @@ y_test = tf.cast(y_test, tf.float32)
 print('Shapes:')
 print(X_train.shape)
 print(X_test.shape)
-print(len(y_train))
-print(len(y_test))
+print(y_train.shape)
+print(y_test.shape)
 
 # Make sure the data is one-hot-encoded
 # LABELS, y_train, y_test = encodeLabels(y_train, y_test)
@@ -99,16 +99,16 @@ def dice_coef_loss(y_true, y_pred):
     return 1-dice_coef(y_true, y_pred)
 
 # Save the best model, not the last
-cb_save_best_model = keras.callbacks.ModelCheckpoint(filepath=model_path,
-                                                         monitor='val_loss',
-                                                         save_best_only=True,
-                                                         verbose=1)
+# cb_save_best_model = keras.callbacks.ModelCheckpoint(filepath=model_path,
+#                                                          monitor='val_loss',
+#                                                          save_best_only=True,
+#                                                          verbose=1)
 
 # Early stop when the val_los isn't improving for PATIENCE epochs
-cb_early_stop = keras.callbacks.EarlyStopping(monitor='val_dice_coef', 
-                                              patience= PATIENCE,
-                                              verbose=1,
-                                              restore_best_weights=True)
+# cb_early_stop = keras.callbacks.EarlyStopping(monitor='val_dice_coef', 
+#                                               patience= PATIENCE,
+#                                               verbose=1,
+#                                               restore_best_weights=True)
 
 # Reduce the Learning Rate when not learning more for 4 epochs.
 # cb_reduce_lr_on_plateau = keras.callbacks.ReduceLROnPlateau(factor=.5, patience=4, verbose=1)
@@ -140,7 +140,8 @@ class LogToAzure(keras.callbacks.Callback):
 #                          horizontal_flip=True, fill_mode="nearest")
 
 # train the network
-autoencoder.fit(X_train, y_train, epochs=50, batch_size=8, shuffle=True, callbacks=[LogToAzure(run), cb_save_best_model, cb_early_stop], validation_data=(X_test, y_test), verbose=1)
+# autoencoder.fit(X_train, y_train, epochs=50, batch_size=8, shuffle=True, callbacks=[LogToAzure(run), cb_save_best_model, cb_early_stop], validation_data=(X_test, y_test), verbose=1)
+autoencoder.fit(X_train, y_train, epochs=50, batch_size=8, shuffle=True, callbacks=[LogToAzure(run)], validation_data=(X_test, y_test), verbose=1)
 
 print("[INFO] evaluating network...")
 
