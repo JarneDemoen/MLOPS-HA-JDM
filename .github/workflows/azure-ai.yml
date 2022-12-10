@@ -310,7 +310,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: KubeCTL version
-        run: kubectl version
+        run: kubectl version --client
 
       - name: Docker restart
         run: docker restart
