@@ -21,7 +21,7 @@ parser.add_argument('--training-folder', type=str, dest='training_folder', help=
 parser.add_argument('--testing-folder', type=str, dest='testing_folder', help='testing folder mounting point.')
 parser.add_argument('--max-epochs', type=int, dest='max_epochs', help='The maximum epochs to train.')
 parser.add_argument('--seed', type=int, dest='seed', help='The random seed to use.')
-# parser.add_argument('--initial-learning-rate', type=float, dest='initial_lr', help='The initial learning rate to use.')
+parser.add_argument('--initial-learning-rate', type=float, dest='initial_lr', help='The initial learning rate to use.')
 parser.add_argument('--batch-size', type=int, dest='batch_size', help='The batch size to use during training.')
 parser.add_argument('--patience', type=int, dest='patience', help='The patience for the Early Stopping.')
 parser.add_argument('--model-name', type=str, dest='model_name', help='The name of the model to use.')
@@ -36,7 +36,7 @@ print('Testing folder:', testing_folder)
 
 MAX_EPOCHS = args.max_epochs # Int
 # SEED = args.seed # Int
-# INITIAL_LEARNING_RATE = args.initial_lr # Float
+INITIAL_LEARNING_RATE = args.initial_lr # Float
 BATCH_SIZE = args.batch_size # Int
 PATIENCE = args.patience # Int
 MODEL_NAME = args.model_name # String
@@ -99,21 +99,21 @@ def dice_coef_loss(y_true, y_pred):
     return 1-dice_coef(y_true, y_pred)
 
 # Save the best model, not the last
-# cb_save_best_model = keras.callbacks.ModelCheckpoint(filepath=model_path,
-#                                                          monitor='val_loss',
-#                                                          save_best_only=True,
-#                                                          verbose=1)
+cb_save_best_model = keras.callbacks.ModelCheckpoint(filepath=model_path,
+                                                         monitor='val_loss',
+                                                         save_best_only=True,
+                                                         verbose=1)
 
 # Early stop when the val_los isn't improving for PATIENCE epochs
-# cb_early_stop = keras.callbacks.EarlyStopping(monitor='val_dice_coef', 
-#                                               patience= PATIENCE,
-#                                               verbose=1,
-#                                               restore_best_weights=True)
+cb_early_stop = keras.callbacks.EarlyStopping(monitor='val_dice_coef', 
+                                              patience= PATIENCE,
+                                              verbose=1,
+                                              restore_best_weights=True)
 
 # Reduce the Learning Rate when not learning more for 4 epochs.
-# cb_reduce_lr_on_plateau = keras.callbacks.ReduceLROnPlateau(factor=.5, patience=4, verbose=1)
+cb_reduce_lr_on_plateau = keras.callbacks.ReduceLROnPlateau(factor=.5, patience=4, verbose=1)
 
-# opt = SGD(lr=INITIAL_LEARNING_RATE, decay=INITIAL_LEARNING_RATE / MAX_EPOCHS) # Define the Optimizer
+opt = SGD(lr=INITIAL_LEARNING_RATE, decay=INITIAL_LEARNING_RATE / MAX_EPOCHS) # Define the Optimizer
 
 autoencoder = buildModel((128, 128, 3))
 # model.compile(loss="categorical_crossentropy", optimizer=opt, metrics=["accuracy"])
@@ -135,14 +135,22 @@ class LogToAzure(keras.callbacks.Callback):
 # Image augmentation allows us to construct “additional” training data from our existing training data 
 # by randomly rotating, shifting, shearing, zooming, and flipping. This is to avoid overfitting.
 # It also allows us to fit AI models using a Generator, so we don't need to capture the whole dataset in memory at once.
-# aug = ImageDataGenerator(rotation_range=30, width_shift_range=0.1,
-#                          height_shift_range=0.1, shear_range=0.2, zoom_range=0.2,
-#                          horizontal_flip=True, fill_mode="nearest")
+aug = ImageDataGenerator(rotation_range=30, width_shift_range=0.1,
+                         height_shift_range=0.1, shear_range=0.2, zoom_range=0.2,
+                         horizontal_flip=True, fill_mode="nearest")
 
 # train the network
-# autoencoder.fit(X_train, y_train, epochs=50, batch_size=8, shuffle=True, callbacks=[LogToAzure(run), cb_save_best_model, cb_early_stop], validation_data=(X_test, y_test), verbose=1)
-autoencoder.fit(X_train, y_train, epochs=50, batch_size=8, shuffle=True, callbacks=[LogToAzure(run)], validation_data=(X_test, y_test), verbose=1)
-
+autoencoder.fit(X_train, y_train, epochs=50, batch_size=8, shuffle=True, callbacks=[LogToAzure(run), cb_save_best_model, cb_early_stop], validation_data=(X_test, y_test), verbose=1)
+history = autoencoder.fit_generator( aug.flow(X_train, y_train, batch_size=8),
+                        validation_data=(X_test, y_test),
+                        steps_per_epoch=len(X_train) // 8,
+                        epochs=50,
+                        callbacks=[
+                            LogToAzure(run), # Thanks to Patrik De Boe!
+                            cb_save_best_model,
+                            cb_early_stop,
+                            cb_reduce_lr_on_plateau
+                        ] )
 print("[INFO] evaluating network...")
 
 print("DONE TRAINING. AI model has been saved to the outputs.")

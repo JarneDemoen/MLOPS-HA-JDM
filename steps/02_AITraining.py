@@ -27,7 +27,7 @@ load_dotenv()
 LUNGS = os.environ.get('LUNGS').split(',')
 SEED = int(os.environ.get('RANDOM_SEED'))
 
-# INITIAL_LEARNING_RATE = float(os.environ.get('INITIAL_LEARNING_RATE')) # Float value
+INITIAL_LEARNING_RATE = float(os.environ.get('INITIAL_LEARNING_RATE')) # Float value
 MAX_EPOCHS = int(os.environ.get('MAX_EPOCHS'))
 BATCH_SIZE = int(os.environ.get('BATCH_SIZE'))
 PATIENCE = int(os.environ.get('PATIENCE'))
@@ -101,7 +101,7 @@ def prepareTraining(ws, env, compute_target) -> Tuple[Experiment, ScriptRunConfi
     '--testing-folder', datasets[test_set_name].as_download('./data/test'), # Currently, this will always take the last version. You can search a way to specify a version if you want to
     '--max-epochs', MAX_EPOCHS,
     '--seed', SEED,
-    # '--initial-learning-rate', INITIAL_LEARNING_RATE,
+    '--initial-learning-rate', INITIAL_LEARNING_RATE,
     '--batch-size', BATCH_SIZE,
     '--patience', PATIENCE,
     '--model-name', MODEL_NAME]

@@ -170,7 +170,7 @@ jobs:
     runs-on: ubuntu-20.04
 
     env:
-      # INITIAL_LEARNING_RATE: 0.01
+      INITIAL_LEARNING_RATE: 0.01
       MAX_EPOCHS: 50
       BATCH_SIZE: 8
       PATIENCE: 11
