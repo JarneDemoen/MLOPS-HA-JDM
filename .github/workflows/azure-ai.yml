@@ -316,9 +316,9 @@ jobs:
 
       - name: Deploy to Kubernetes
         run: |
-          kubectl config use-context docker-desktop
-          kubectl apply -f kubernetes/deployment.yaml
-          kubectl apply -f kubernetes/service.yaml
+          kubectl config use-context docker-desktop -n mlops-home-assigment
+          kubectl apply -f kubernetes/deployment.yaml -n mlops-home-assigment
+          kubectl apply -f kubernetes/service.yaml -n mlops-home-assigment
           kubectl rollout restart deployment ai-api -n mlops-home-assigment
 
 
