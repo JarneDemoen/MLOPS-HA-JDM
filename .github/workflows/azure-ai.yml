@@ -312,9 +312,6 @@ jobs:
       - name: KubeCTL version
         run: kubectl version --client
 
-      - name: Docker restart
-        run: docker restart
-
       - name: Docker logs
         run: docker logs
 
