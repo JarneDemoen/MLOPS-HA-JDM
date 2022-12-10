@@ -322,4 +322,3 @@ jobs:
           kubectl rollout restart deployment ai-api -n mlops-home-assignment
 
 
-
