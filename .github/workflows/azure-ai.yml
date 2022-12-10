@@ -271,7 +271,7 @@ jobs:
         with:
           # list of Docker images to use as base name for tags
           images: |
-            ghcr.io/jarnedemoen/mlops-ha-jarnedemoen-lungs:latest
+            ghcr.io/jarnedemoen/mlops-ha-jarnedemoen-lungs
           # generate Docker tags based on the following events/attributes:
           # The GitHub Branch
           # The GitHub SHA
@@ -308,7 +308,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-
       - name: KubeCTL version
         run: kubectl version 
 
@@ -317,7 +316,6 @@ jobs:
 
       - name: Deploy to Kubernetes
         run: |
-          kubectl config use-context docker-desktop
           kubectl apply -f kubernetes/deployment.yaml
           kubectl apply -f kubernetes/service.yaml
           kubectl rollout restart deployment ai-api -n mlops-home-assignment
