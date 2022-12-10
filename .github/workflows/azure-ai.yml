@@ -272,6 +272,8 @@ jobs:
           # list of Docker images to use as base name for tags
           images: |
             ghcr.io/jarnedemoen/mlops-ha-jarnedemoen-lungs
+          flavor: |
+            latest=true
           # generate Docker tags based on the following events/attributes:
           # The GitHub Branch
           # The GitHub SHA
@@ -309,7 +311,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: KubeCTL version
-        run: kubectl version 
+        run: kubectl version --client
 
       - name: download the image with the docker pull command
         run: docker pull ghcr.io/jarnedemoen/mlops-ha-jarnedemoen-lungs:latest
