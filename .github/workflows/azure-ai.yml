@@ -271,7 +271,7 @@ jobs:
         with:
           # list of Docker images to use as base name for tags
           images: |
-            ghcr.io/jarnedemoen/mlops-ha-jarnedemoen-lungs
+            ghcr.io/jarnedemoen/mlops-ha-jarnedemoen-lungs:latest
           # generate Docker tags based on the following events/attributes:
           # The GitHub Branch
           # The GitHub SHA
