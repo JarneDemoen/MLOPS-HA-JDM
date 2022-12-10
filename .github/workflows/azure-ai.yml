@@ -308,6 +308,13 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+
+      - name: Start Docker daemon
+        run: sudo service docker restart
+
+      - name: Check Docker status
+        run: sudo service docker status
+
       - name: KubeCTL version
         run: kubectl version --client
 
@@ -320,6 +327,6 @@ jobs:
           kubectl apply -f kubernetes/deployment.yaml
           kubectl apply -f kubernetes/service.yaml
           kubectl rollout restart deployment ai-api -n mlops-home-assignment
-          
+
 
 
