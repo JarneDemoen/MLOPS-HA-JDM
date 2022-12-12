@@ -35,7 +35,6 @@ testing_folder = args.testing_folder
 print('Testing folder:', testing_folder)
 
 MAX_EPOCHS = args.max_epochs # Int
-# SEED = args.seed # Int
 INITIAL_LEARNING_RATE = args.initial_lr # Float
 BATCH_SIZE = args.batch_size # Int
 PATIENCE = args.patience # Int
@@ -62,25 +61,11 @@ X_test = tf.cast(X_test, tf.float32)
 y_train = tf.cast(y_train, tf.float32)
 y_test = tf.cast(y_test, tf.float32)
 
-# X_train = np.array(X_train)
-# y_train = np.array(y_train)
-
-# X_test = np.array(X_test)
-# y_test = np.array(y_test)
-
 print('Shapes:')
 print(X_train.shape)
 print(X_test.shape)
 print(y_train.shape)
 print(y_test.shape)
-
-# Make sure the data is one-hot-encoded
-# LABELS, y_train, y_test = encodeLabels(y_train, y_test)
-# print(LABELS)
-# print('One Hot Shapes:')
-
-# print(y_train.shape)
-# print(y_test.shape)
 
 # Create an output directory where our AI model will be saved to.
 # Everything inside the `outputs` directory will be logged and kept aside for later usage.
@@ -131,26 +116,9 @@ class LogToAzure(keras.callbacks.Callback):
         for k, v in logs.items():
             self.run.log(k, v)
 
-# Construct & initialize the image data generator for data augmentation
-# Image augmentation allows us to construct “additional” training data from our existing training data 
-# by randomly rotating, shifting, shearing, zooming, and flipping. This is to avoid overfitting.
-# It also allows us to fit AI models using a Generator, so we don't need to capture the whole dataset in memory at once.
-aug = ImageDataGenerator(rotation_range=30, width_shift_range=0.1,
-                         height_shift_range=0.1, shear_range=0.2, zoom_range=0.2,
-                         horizontal_flip=True, fill_mode="nearest")
-
 # train the network
 autoencoder.fit(X_train, y_train, epochs=50, batch_size=8, shuffle=True, callbacks=[LogToAzure(run), cb_save_best_model, cb_early_stop], validation_data=(X_test, y_test), verbose=1)
-history = autoencoder.fit_generator( aug.flow(X_train, y_train, batch_size=8),
-                        validation_data=(X_test, y_test),
-                        steps_per_epoch=len(X_train) // 8,
-                        epochs=50,
-                        callbacks=[
-                            LogToAzure(run), # Thanks to Patrik De Boe!
-                            cb_save_best_model,
-                            cb_early_stop,
-                            cb_reduce_lr_on_plateau
-                        ] )
+
 print("[INFO] evaluating network...")
 
 print("DONE TRAINING. AI model has been saved to the outputs.")

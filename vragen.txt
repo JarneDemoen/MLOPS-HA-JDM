@@ -1,2 +1,0 @@
-Mijn AI model blijft 'fout' trainen, de variabelen veranderen niet, loss daalt niet etc 
-Error bij het deployen met Kubernetes

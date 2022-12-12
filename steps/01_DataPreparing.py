@@ -19,10 +19,8 @@ from azureml.data.datapath import DataPath
 # When you work locally, you can use a .env file to store all your environment variables.
 # This line read those in.
 load_dotenv()
-# LUNG_IMAGES = os.environ.get('LUNG_IMAGES')
-# LUNG_MASKS = os.environ.get('LUNG_MASKS')
-# LUNGS = [LUNG_IMAGES, LUNG_MASKS]
-LUNGS = os.environ.get('LUNGS').split(',') # When using Github Actions
+
+LUNGS = os.environ.get('LUNGS').split(',')
 SEED = int(os.environ.get('RANDOM_SEED'))
 TRAIN_TEST_SPLIT_FACTOR = float(os.environ.get('TRAIN_TEST_SPLIT_FACTOR'))
 
@@ -38,13 +36,10 @@ def processAndUploadLungImages(datasets, data_path, processed_path, ws, dataset_
 
     # Get all the image paths with the `glob()` method.
     print(f'Resizing all images for {dataset_name} ...')
-    # print(os.listdir(lung_dataset_path))
-    # print(f"lung dataset path: {lung_dataset_path}")
-    # print(f"dataset name: {dataset_name}")
+    
     image_paths = glob(f"{lung_dataset_path}/*.png")
-    # image_paths = glob(f'{lung_dataset_path}/{dataset_name}/**/*.png') # CHANGE THIS LINE IF YOU NEED TO GET YOUR dataset_nameS IN THERE IF NEEDED!
-    # print("image paths: ", image_paths)
-    # Process all the images with OpenCV. Reading them, then resizing them to 64x64 and saving them once more.
+    
+    # Process all the images with OpenCV. Reading them, then resizing them to 128x128 and saving them once more.
     print(f"Processing {len(image_paths)} images")
     for image_path in image_paths:
         image = cv2.imread(image_path)
@@ -108,7 +103,7 @@ def trainTestSplitData(ws):
         print("lung_dataset: ", lung_dataset)
         print(f'Starting to process {dataset_name} images.')
 
-        # Get only the .JPG images
+        # Get only the .PNG images
         lung_images = [img for img in lung_dataset.to_path() if img.split('.')[-1] == 'png']
 
         print(f'... there are about {len(lung_images)} images to process.')

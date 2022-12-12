@@ -26,20 +26,6 @@ def getTargets(filepaths: List[str]) -> List[str]:
             targets.append(image)
     return np.array(targets)
 
-
-def encodeLabels(y_train: List, y_test: List):
-    label_encoder = LabelEncoder()
-    y_train_labels = label_encoder.fit_transform(y_train)
-    y_test_labels = label_encoder.transform(y_test)
-
-    y_train_1h = to_categorical(y_train_labels)
-    y_test_1h = to_categorical(y_test_labels)
-
-    LABELS = label_encoder.classes_
-    print(f"{LABELS} -- {label_encoder.transform(LABELS)}")
-
-    return LABELS, y_train_1h, y_test_1h
-
 def getFeatures(filepaths: List[str]) -> np.array:
     features = []
     for fp in filepaths:
